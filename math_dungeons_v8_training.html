@@ -1,0 +1,419 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Lexend', sans-serif; background: #f0ebe0; color: #1a1000; min-height: 100vh; }
+  .wrap { min-height: 100vh; padding: 24px 20px 40px; }
+  h1.title { font-size: 28px; font-weight: 700; text-align: center; color: #5a1e00; margin-bottom: 6px; }
+  .subtitle { text-align: center; font-size: 16px; font-weight: 500; color: #5a3a10; margin-bottom: 22px; }
+  .phase-tabs { display: flex; gap: 8px; margin-bottom: 22px; justify-content: center; flex-wrap: wrap; }
+  .phase-tab { font-family: 'Lexend', sans-serif; font-size: 15px; font-weight: 600; padding: 10px 22px; border-radius: 24px; border: 2px solid #8a5020; background: #fff; color: #5a2800; cursor: pointer; transition: all 0.2s; }
+  .phase-tab.active { background: #5a1e00; color: #fff; border-color: #5a1e00; }
+  .phase-tab:hover:not(.active) { background: #f0dcc0; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .team-panel { background: #fff; border: 2px solid #8a5020; border-radius: 10px; padding: 16px; }
+  .team-header { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+  .team-a .team-header { color: #0a2a7a; }
+  .team-b .team-header { color: #7a0a0a; }
+  .team-name-input { background: #f5ede0; border: 2px solid #8a5020; border-radius: 6px; color: #1a1000; font-family: 'Lexend', sans-serif; font-size: 15px; font-weight: 500; padding: 9px 12px; width: 100%; margin-bottom: 12px; }
+  .team-name-input:focus { outline: none; border-color: #5a1e00; }
+  .member-list { min-height: 50px; margin-bottom: 10px; }
+  .member-chip { display: inline-flex; align-items: center; gap: 6px; background: #f0dcc0; border: 2px solid #8a5020; border-radius: 20px; padding: 5px 12px 5px 14px; font-size: 14px; font-weight: 500; color: #2a1000; margin: 3px 3px 3px 0; }
+  .remove-btn { background: none; border: none; color: #7a3010; cursor: pointer; font-size: 16px; line-height: 1; padding: 0; font-weight: 700; }
+  .remove-btn:hover { color: #aa0000; }
+  .add-row { display: flex; gap: 6px; }
+  .add-row input { flex: 1; background: #f5ede0; border: 2px solid #8a5020; border-radius: 6px; color: #1a1000; font-family: 'Lexend', sans-serif; font-size: 14px; font-weight: 500; padding: 8px 10px; }
+  .add-row input:focus { outline: none; border-color: #5a1e00; }
+  .btn { font-family: 'Lexend', sans-serif; font-size: 15px; font-weight: 600; padding: 9px 18px; border-radius: 8px; border: 2px solid #8a5020; background: #fff; color: #3a1a00; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .btn:hover { background: #f0dcc0; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: #5a1e00; color: #fff; border-color: #5a1e00; }
+  .btn-primary:hover { background: #3a1000; }
+  .btn-danger { border-color: #8a0000; color: #6a0000; background: #fff; }
+  .btn-danger:hover { background: #ffe0e0; }
+
+  .rules-card { background: #fff; border: 2px solid #8a5020; border-radius: 10px; padding: 18px; margin-bottom: 14px; }
+  .rules-card h3 { font-size: 17px; font-weight: 700; color: #5a1e00; margin-bottom: 10px; }
+  .rules-card p { font-size: 15px; font-weight: 500; color: #1a1000; line-height: 1.7; }
+  .rules-card ul { list-style: none; padding: 0; }
+  .rules-card ul li { font-size: 15px; font-weight: 500; color: #1a1000; padding: 5px 0 5px 24px; position: relative; line-height: 1.6; }
+  .rules-card ul li::before { content: '-'; position: absolute; left: 0; font-weight: 700; }
+
+  /* SCOREBOARD */
+  .score-banner { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 18px; }
+  .score-team { text-align: center; padding: 16px 12px; border-radius: 10px; border: 2px solid #8a5020; background: #fff; }
+  .score-team.team-a { border-color: #0a2a7a; background: #e8eeff; }
+  .score-team.team-b { border-color: #7a0a0a; background: #ffe8e8; }
+  .score-team-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .team-a .score-team-name { color: #0a2a7a; }
+  .team-b .score-team-name { color: #7a0a0a; }
+  .score-number { font-size: 48px; font-weight: 700; line-height: 1; }
+  .team-a .score-number { color: #0a2a7a; }
+  .team-b .score-number { color: #7a0a0a; }
+  .score-label { font-size: 13px; font-weight: 500; color: #4a2a00; margin-top: 4px; }
+  .vs-divider { font-size: 18px; font-weight: 700; color: #5a2800; text-align: center; }
+
+  .progress-row { display: flex; gap: 5px; margin-bottom: 6px; justify-content: center; flex-wrap: wrap; }
+  .prog-pip { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #8a5020; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #5a2800; transition: all 0.3s; }
+  .prog-pip.done-a { background: #0a2a7a; border-color: #0a2a7a; color: #fff; }
+  .prog-pip.done-b { background: #7a0a0a; border-color: #7a0a0a; color: #fff; }
+  .prog-pip.half { width: 24px; height: 24px; font-size: 10px; border-style: dashed; }
+  .prog-pip.half.done-a { background: #e8eeff; border-color: #0a2a7a; color: #0a2a7a; border-style: dashed; }
+  .prog-pip.half.done-b { background: #ffe8e8; border-color: #7a0a0a; color: #7a0a0a; border-style: dashed; }
+  .prog-label { font-size: 11px; font-weight: 600; color: #7a5020; text-align: center; margin-bottom: 14px; }
+
+  .adventure-log { background: #fff; border: 2px solid #8a5020; border-radius: 8px; padding: 12px; max-height: 130px; overflow-y: auto; margin-bottom: 16px; }
+  .log-title { font-size: 12px; font-weight: 700; color: #5a2800; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .log-entry { font-size: 13px; font-weight: 500; color: #2a1000; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid #d0b890; line-height: 1.5; }
+  .log-entry:last-child { border-bottom: none; }
+  .log-a { color: #0a2a7a; font-weight: 700; }
+  .log-b { color: #7a0a0a; font-weight: 700; }
+  .log-ok { color: #005a10; font-weight: 700; }
+
+  /* SECTION HEADERS */
+  .section-header { font-size: 18px; font-weight: 700; color: #5a1e00; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 2px solid #c0a070; }
+  .section-header span { font-size: 14px; font-weight: 500; color: #7a5020; margin-left: 8px; }
+
+  /* DUNGEON CARDS */
+  .dungeon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .dungeon-card { background: #fff; border: 2px solid #8a5020; border-radius: 10px; padding: 14px; }
+  .dungeon-card.training { border-color: #507020; background: #f5fae8; }
+  .dungeon-card.cleared-a { border-color: #0a2a7a; background: #e8eeff; }
+  .dungeon-card.cleared-b { border-color: #7a0a0a; background: #ffe8e8; }
+  .dungeon-card.training.cleared-a { border-color: #0a2a7a; background: #e8eeff; }
+  .dungeon-card.training.cleared-b { border-color: #7a0a0a; background: #ffe8e8; }
+
+  .dungeon-num { font-size: 12px; font-weight: 700; color: #5a2800; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .dungeon-num.training-num { color: #406010; }
+  .dungeon-name { font-size: 16px; font-weight: 700; color: #1a1000; margin-bottom: 4px; line-height: 1.3; }
+  .dungeon-domain { font-size: 13px; font-weight: 600; color: #4a2800; margin-bottom: 4px; }
+  .dungeon-domain.training-domain { color: #3a5010; }
+  .dungeon-challenge { font-size: 14px; font-weight: 500; color: #2a1800; margin-bottom: 10px; line-height: 1.5; }
+  .points-badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-bottom: 8px; }
+  .points-badge.full { background: #fff3c0; color: #6a4000; border: 1px solid #c09000; }
+  .points-badge.half { background: #e8f5d0; color: #2a5000; border: 1px solid #70a020; }
+
+  .cleared-badge { font-size: 14px; font-weight: 700; margin-bottom: 4px; display: none; }
+  .cleared-by-label { font-size: 13px; font-weight: 500; color: #2a3a60; margin-bottom: 8px; }
+  .dungeon-card.cleared-a .cleared-badge { display: block; color: #0a2a7a; }
+  .dungeon-card.cleared-b .cleared-badge { display: block; color: #7a0a0a; }
+
+  .claim-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+  .ixl-link { font-family: 'Lexend', sans-serif; font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 6px; border: 2px solid #203080; color: #102060; text-decoration: none; background: #e0e8ff; transition: all 0.15s; white-space: nowrap; }
+  .ixl-link:hover { background: #c8d8ff; }
+  .ixl-link.training-link { border-color: #406010; color: #2a4000; background: #e8f5d0; }
+  .ixl-link.training-link:hover { background: #d0e8b0; }
+
+  .claim-btn { font-family: 'Lexend', sans-serif; padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; line-height: 1.4; text-align: center; }
+  .claim-btn .ixl-code { font-size: 14px; font-weight: 700; display: block; }
+  .claim-btn .team-label { font-size: 12px; font-weight: 600; display: block; }
+  .claim-a-btn { border: 2px solid #0a2a7a; color: #0a2a7a; background: #e8eeff; }
+  .claim-a-btn:hover { background: #c8d4ff; }
+  .claim-b-btn { border: 2px solid #7a0a0a; color: #7a0a0a; background: #ffe8e8; }
+  .claim-b-btn:hover { background: #ffc8c8; }
+  .unmark-btn { font-family: 'Lexend', sans-serif; font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 6px; border: 2px solid #8a5020; color: #3a1a00; background: #f0dcc0; cursor: pointer; transition: all 0.15s; }
+  .unmark-btn:hover { background: #e0c8a0; }
+
+  .winner-banner { display: none; text-align: center; padding: 24px; background: #fffbe0; border: 3px solid #b08000; border-radius: 12px; margin-bottom: 18px; }
+  .winner-banner.visible { display: block; }
+  .winner-title { font-size: 24px; font-weight: 700; color: #5a1e00; margin-bottom: 6px; }
+  .winner-sub { font-size: 16px; font-weight: 500; color: #2a1000; }
+  .action-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #f0dcc0; }
+  ::-webkit-scrollbar-thumb { background: #8a5020; border-radius: 3px; }
+
+  @media (max-width: 500px) {
+    .dungeon-grid, .team-grid { grid-template-columns: 1fr; }
+    .score-banner { grid-template-columns: 1fr; }
+    .vs-divider { display: none; }
+  }
+</style>
+
+<div class="wrap">
+  <h1 class="title">Math Dungeons of Doom</h1>
+  <p class="subtitle">The IXL Gauntlet &mdash; two guilds, ten dungeons, one champion</p>
+
+  <div class="phase-tabs">
+    <button class="phase-tab active" onclick="showTab('setup')">Team Setup</button>
+    <button class="phase-tab" onclick="showTab('rules')">Rules</button>
+    <button class="phase-tab" onclick="showTab('battle')">Battle Map</button>
+  </div>
+
+  <div id="tab-setup" class="section active">
+    <div class="team-grid">
+      <div class="team-panel team-a">
+        <div class="team-header">Team A</div>
+        <input class="team-name-input" id="name-a" value="The Arcane Order" placeholder="Team name..." oninput="syncNames()">
+        <div class="member-list" id="list-a"></div>
+        <div class="add-row">
+          <input type="text" id="inp-a" placeholder="Add adventurer..." onkeydown="if(event.key==='Enter')addMember('a')">
+          <button class="btn btn-primary" onclick="addMember('a')">+ Add</button>
+        </div>
+      </div>
+      <div class="team-panel team-b">
+        <div class="team-header">Team B</div>
+        <input class="team-name-input" id="name-b" value="The Iron Vanguard" placeholder="Team name..." oninput="syncNames()">
+        <div class="member-list" id="list-b"></div>
+        <div class="add-row">
+          <input type="text" id="inp-b" placeholder="Add adventurer..." onkeydown="if(event.key==='Enter')addMember('b')">
+          <button class="btn btn-primary" onclick="addMember('b')">+ Add</button>
+        </div>
+      </div>
+    </div>
+    <div style="background:#fff;border:2px solid #8a5020;border-radius:10px;padding:16px;margin-bottom:16px;">
+      <p style="font-size:16px;font-weight:700;color:#5a1e00;margin-bottom:8px;">How to Form Teams</p>
+      <p style="font-size:15px;font-weight:500;color:#1a1000;line-height:1.8;">8 students form 2 teams of 4. The two students with the highest MAP scores become Team Captains. Captains compete in a quick challenge (dice roll, coin flip, or mental math duel). The winner chooses first pick. Teams alternate selecting members until teams are full.</p>
+    </div>
+    <div style="text-align:center;">
+      <button class="btn btn-primary" onclick="showTab('battle')">Enter the Dungeon</button>
+    </div>
+  </div>
+
+  <div id="tab-rules" class="section">
+    <div class="rules-card">
+      <h3>Objective</h3>
+      <p>Be the first team to reach 10 points. Main Dungeons are worth 1 point each. Training Grounds are worth 0.5 points each.</p>
+    </div>
+    <div class="rules-card">
+      <h3>How the Game Is Played</h3>
+      <ul>
+        <li>Both teams work simultaneously on any dungeon of their choice</li>
+        <li>Each team chooses which member attempts each dungeon</li>
+        <li>85% or higher = Dungeon Cleared! Record it using the team color buttons</li>
+        <li>A dungeon claimed by one team cannot be claimed by the other</li>
+        <li>At any moment, the teacher may randomly choose a team member to explain the math concept or solve a sample problem aloud on the board</li>
+        <li>Correct explanation = dungeon progress counts</li>
+        <li>Incorrect explanation = team must pause and retry later</li>
+      </ul>
+    </div>
+    <div class="rules-card">
+      <h3>Additional Rules</h3>
+      <ul>
+        <li>Team members may not coach during explanations</li>
+        <li>Everyone must be prepared &mdash; any adventurer may be called</li>
+        <li>Already-cleared dungeons cannot be replayed</li>
+        <li>Strategy matters: choose wisely who enters which dungeon</li>
+      </ul>
+    </div>
+    <div style="text-align:center;margin-top:14px;">
+      <button class="btn btn-primary" onclick="showTab('battle')">To Battle</button>
+    </div>
+  </div>
+
+  <div id="tab-battle" class="section">
+    <div id="winner-banner" class="winner-banner">
+      <div class="winner-title" id="winner-text">Victory!</div>
+      <div class="winner-sub" id="winner-sub">The dungeon has been conquered!</div>
+    </div>
+    <div class="score-banner">
+      <div class="score-team team-a">
+        <div class="score-team-name" id="sname-a">The Arcane Order</div>
+        <div class="score-number" id="score-a">0</div>
+        <div class="score-label">points</div>
+      </div>
+      <div class="vs-divider">VS</div>
+      <div class="score-team team-b">
+        <div class="score-team-name" id="sname-b">The Iron Vanguard</div>
+        <div class="score-number" id="score-b">0</div>
+        <div class="score-label">points</div>
+      </div>
+    </div>
+
+    <div class="progress-row" id="pips-main"></div>
+    <div class="progress-row" id="pips-train"></div>
+    <div class="prog-label">Solid = Main Dungeon (1 pt) &nbsp;|&nbsp; Dashed = Training Ground (0.5 pts)</div>
+
+    <div class="adventure-log">
+      <div class="log-title">Adventure Log</div>
+      <div id="log"></div>
+    </div>
+
+    <div class="section-header">Main Dungeons <span>1 point each</span></div>
+    <div class="dungeon-grid" id="dgrid-main"></div>
+
+    <div class="section-header">Training Grounds <span>0.5 points each</span></div>
+    <div class="dungeon-grid" id="dgrid-train"></div>
+
+    <div class="action-row">
+      <button class="btn" onclick="showTab('setup')">Manage Teams</button>
+      <button class="btn btn-danger" onclick="resetGame()">Reset Quest</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MAIN = [
+  {id:'m1',name:'The Crypt of Fractured Realms',domain:'Number & Operations - Fractions',challenge:'Dividing fractions and mixed numbers',ixl:'H.9',url:'https://www.ixl.com/math/grade-6/divide-fractions-and-mixed-numbers',pts:1},
+  {id:'m2',name:'The Chamber of Shifting Signs',domain:'Rational Numbers',challenge:'Adding and subtracting positive and negative numbers',ixl:'J.4',url:'https://www.ixl.com/math/grade-7/add-and-subtract-rational-numbers',pts:1},
+  {id:'m3',name:'The Hall of Disguised Expressions',domain:'Algebraic Expressions',challenge:'Recognizing and generating equivalent expressions',ixl:'A1 Equiv.',url:'https://www.ixl.com/math/algebra-1/identify-equivalent-linear-expressions',pts:1},
+  {id:'m4',name:'The Forge of Like Terms',domain:'Algebraic Reasoning',challenge:'Combining like terms correctly',ixl:'A1 Like Terms',url:'https://www.ixl.com/math/algebra-1/simplify-variable-expressions-involving-like-terms-and-the-distributive-property',pts:1},
+  {id:'m5',name:'The Pit of Inequality',domain:'Inequalities',challenge:'Solving two-step linear inequalities',ixl:'A1 2-Step Ineq.',url:'https://www.ixl.com/math/algebra-1/graph-solutions-to-two-step-linear-inequalities',pts:1},
+  {id:'m6',name:'The Number Line Abyss',domain:'Inequalities & Representation',challenge:'Graphing solutions to multi-step linear inequalities',ixl:'A1 Multi Ineq.',url:'https://www.ixl.com/math/algebra-1/graph-solutions-to-multi-step-linear-inequalities',pts:1},
+  {id:'m7',name:'The Table of Proportions',domain:'Linear Functions',challenge:'Identify linear functions from tables',ixl:'A1 Tables',url:'https://www.ixl.com/math/algebra-1/identify-linear-functions-from-tables',pts:1},
+  {id:'m8',name:'The Slope Sentinel',domain:'Rate of Change',challenge:'Interpreting slope from graphs',ixl:'A1 Slope',url:'https://www.ixl.com/math/algebra-1/find-slope-from-a-graph',pts:1},
+  {id:'m9',name:'The Surface Labyrinth',domain:'Geometry - Surface Area',challenge:'Surface area of cubes and prisms',ixl:'G7 Surface Area',url:'https://www.ixl.com/math/grade-7/surface-area-of-cubes-and-prisms',pts:1},
+  {id:'m10',name:'The Vault of Volume',domain:'Measurement & Data',challenge:'Solving volume problems with rectangular prisms',ixl:'G6 Volume',url:'https://www.ixl.com/math/grade-6/volume-of-rectangular-prisms',pts:1}
+];
+
+const TRAINING = [
+  {id:'t1',name:'The Multiplication Mines',domain:'Fractions',challenge:'Multiply fractions and mixed numbers',ixl:'G6 Multiply Fracs',url:'https://www.ixl.com/math/grade-6/multiply-fractions-and-mixed-numbers',pts:0.5},
+  {id:'t2',name:'The Absolute Value Watchtower',domain:'Integers',challenge:'Absolute value of integers',ixl:'G6 Abs. Value',url:'https://www.ixl.com/math/grade-6/absolute-value',pts:0.5},
+  {id:'t3',name:'The Expression Gateway',domain:'Algebraic Expressions',challenge:'Write variable expressions: word problems',ixl:'G6 Write Exprs.',url:'https://www.ixl.com/math/grade-6/write-variable-expressions-word-problems',pts:0.5},
+  {id:'t4',name:'The Perimeter Courtyard',domain:'Geometry',challenge:'Perimeter of polygons',ixl:'G6 Perimeter',url:'https://www.ixl.com/math/grade-6/perimeter',pts:0.5},
+  {id:'t5',name:'The Decimal Dockyards',domain:'Number Operations',challenge:'Add and subtract decimals',ixl:'G6 Decimals',url:'https://www.ixl.com/math/grade-6/add-and-subtract-decimals',pts:0.5},
+  {id:'t6',name:'The Hall of Unit Rates',domain:'Ratios & Proportions',challenge:'Unit rates',ixl:'G6 Unit Rates',url:'https://www.ixl.com/math/grade-6/unit-rates',pts:0.5}
+];
+
+const ALL = [...MAIN, ...TRAINING];
+
+let S = {
+  teams: { a:{name:'The Arcane Order',members:[]}, b:{name:'The Iron Vanguard',members:[]} },
+  cleared: {},
+  log: []
+};
+
+function getScore(team) {
+  return ALL.filter(d=>S.cleared[d.id]===team).reduce((sum,d)=>sum+d.pts,0);
+}
+
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.phase-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const i = {setup:0,rules:1,battle:2}[id];
+  if(i!==undefined) document.querySelectorAll('.phase-tab')[i].classList.add('active');
+  if(id==='battle') renderBattle();
+}
+
+function syncNames() {
+  S.teams.a.name = document.getElementById('name-a').value || 'Team A';
+  S.teams.b.name = document.getElementById('name-b').value || 'Team B';
+}
+
+function addMember(t) {
+  const inp = document.getElementById('inp-'+t);
+  const v = inp.value.trim();
+  if(!v) return;
+  S.teams[t].members.push(v);
+  inp.value = '';
+  renderList(t);
+}
+
+function removeMember(t,i) {
+  S.teams[t].members.splice(i,1);
+  renderList(t);
+}
+
+function renderList(t) {
+  document.getElementById('list-'+t).innerHTML = S.teams[t].members.map((m,i)=>
+    '<span class="member-chip">'+m+'<button class="remove-btn" onclick="removeMember(\''+t+'\','+i+')">x</button></span>'
+  ).join('');
+}
+
+function markCleared(id, team) {
+  S.cleared[id] = team;
+  const d = ALL.find(x=>x.id===id);
+  addLog('<span class="log-'+team+'">'+S.teams[team].name+'</span> <span class="log-ok">cleared</span> '+d.name+' (IXL '+d.ixl+') for '+d.pts+' pt'+(d.pts!==1?'s':'')+'!');
+  checkWinner();
+  renderBattle();
+}
+
+function unmarkCleared(id) {
+  delete S.cleared[id];
+  addLog('Dungeon reset.');
+  document.getElementById('winner-banner').classList.remove('visible');
+  renderBattle();
+}
+
+function addLog(msg) {
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  S.log.unshift('['+t+'] '+msg);
+  if(S.log.length>30) S.log.pop();
+}
+
+function checkWinner() {
+  const sa = getScore('a');
+  const sb = getScore('b');
+  const maxPossible = ALL.reduce((s,d)=>s+d.pts,0);
+  const taken = Object.keys(S.cleared).length;
+  if(sa >= 10 || sb >= 10 || taken === ALL.length) {
+    const w = sa > sb ? S.teams.a.name : sb > sa ? S.teams.b.name : 'Both teams tie';
+    document.getElementById('winner-text').textContent = w+' wins!';
+    document.getElementById('winner-sub').textContent = S.teams.a.name+': '+sa+' pts  |  '+S.teams.b.name+': '+sb+' pts';
+    document.getElementById('winner-banner').classList.add('visible');
+  }
+}
+
+function fmt(n) { return n % 1 === 0 ? n.toString() : n.toFixed(1); }
+
+function renderBattle() {
+  const sa = getScore('a'), sb = getScore('b');
+  document.getElementById('score-a').textContent = fmt(sa);
+  document.getElementById('score-b').textContent = fmt(sb);
+  document.getElementById('sname-a').textContent = S.teams.a.name;
+  document.getElementById('sname-b').textContent = S.teams.b.name;
+
+  document.getElementById('pips-main').innerHTML = MAIN.map(d=>{
+    const who=S.cleared[d.id]; const cls=who?'done-'+who:'';
+    return '<div class="prog-pip '+cls+'" title="'+d.name+'">'+d.id.replace('m','')+'</div>';
+  }).join('');
+
+  document.getElementById('pips-train').innerHTML = TRAINING.map(d=>{
+    const who=S.cleared[d.id]; const cls=who?'done-'+who:'';
+    return '<div class="prog-pip half '+cls+'" title="'+d.name+'">T'+d.id.replace('t','')+'</div>';
+  }).join('');
+
+  document.getElementById('log').innerHTML = S.log.length===0
+    ? '<div class="log-entry">Both guilds stand ready at the dungeon gates...</div>'
+    : S.log.map(l=>'<div class="log-entry">'+l+'</div>').join('');
+
+  function renderCards(dungeons, gridId, isTraining) {
+    document.getElementById(gridId).innerHTML = dungeons.map(d=>{
+      const who=S.cleared[d.id]; const cl=!!who;
+      const cardClass=(isTraining?'training ':'')+(cl?'cleared-'+who:'');
+      const clearedLabel=cl?S.teams[who].name+' cleared this':'';
+      const linkClass=isTraining?'ixl-link training-link':'ixl-link';
+      const badge=isTraining
+        ? '<span class="points-badge half">0.5 points</span>'
+        : '<span class="points-badge full">1 point</span>';
+      const numClass=isTraining?'dungeon-num training-num':'dungeon-num';
+      const domClass=isTraining?'dungeon-domain training-domain':'dungeon-domain';
+      const label=isTraining?'Training '+d.id.replace('t',''):'Dungeon '+d.id.replace('m','');
+
+      const btns=cl
+        ? '<button class="unmark-btn" onclick="unmarkCleared(\''+d.id+'\')">Undo</button>'
+        : '<button class="claim-btn claim-a-btn" onclick="markCleared(\''+d.id+'\',\'a\')">'
+            +'<span class="ixl-code">IXL '+d.ixl+'</span>'
+            +'<span class="team-label">'+S.teams.a.name+'</span>'
+          +'</button>'
+          +'<button class="claim-btn claim-b-btn" onclick="markCleared(\''+d.id+'\',\'b\')">'
+            +'<span class="ixl-code">IXL '+d.ixl+'</span>'
+            +'<span class="team-label">'+S.teams.b.name+'</span>'
+          +'</button>';
+
+      return '<div class="dungeon-card '+cardClass+'">'
+        +'<div class="'+numClass+'">'+label+'</div>'
+        +'<div class="dungeon-name">'+d.name+'</div>'
+        +'<div class="'+domClass+'">'+d.domain+'</div>'
+        +'<div class="dungeon-challenge">'+d.challenge+'</div>'
+        +badge
+        +(cl?'<div class="cleared-badge">Cleared</div><div class="cleared-by-label">'+clearedLabel+'</div>':'')
+        +'<div class="claim-row">'
+          +'<a class="'+linkClass+'" href="'+d.url+'" target="_blank">Open IXL '+d.ixl+'</a>'
+          +btns
+        +'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  renderCards(MAIN, 'dgrid-main', false);
+  renderCards(TRAINING, 'dgrid-train', true);
+}
+
+renderList('a'); renderList('b');
+addLog('Both guilds stand ready at the dungeon gates...');
+</script>
